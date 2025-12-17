@@ -102,7 +102,7 @@ async function writeEnvFile(config: EnvConfig, configDir?: string): Promise<void
 }
 
 async function main(): Promise<void> {
-  const cli = cac('dotenvg')
+  const cli = cac('genv')
 
   cli
     .command('', 'Generate environment files from configuration')

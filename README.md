@@ -1,4 +1,4 @@
-# dotenvg-cli
+# genv-cli
 
 A CLI tool for managing environment variables.
 
@@ -12,13 +12,13 @@ A CLI tool for managing environment variables.
 ## Installation
 
 ```bash
-npm install -g dotenvg-cli
+npm install -g genv-cli
 ```
 
 ## Usage
 
 ```bash
-dotenvg --help
+genv --help
 ```
 
 ### Basic Usage
@@ -50,10 +50,10 @@ export default {
 2. Run the CLI:
 ```bash
 # If env.config.js is in current directory
-dotenvg
+genv
 
 # Or specify config directory
-dotenvg -e ./config
+genv -e ./config
 ```
 
 3. If multiple configurations are defined, you'll be prompted to select one.
