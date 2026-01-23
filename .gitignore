@@ -9,6 +9,5 @@ lib-cov
 logs
 node_modules
 temp
-.temp
-env.*
-.env.*
+cache
+.eslintcache

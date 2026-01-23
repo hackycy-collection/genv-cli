@@ -2,10 +2,15 @@
   "name": "genv-cli",
   "type": "module",
   "version": "0.0.0",
-  "packageManager": "pnpm@10.20.0",
-  "description": "A CLI tool for managing environment variables",
-  "author": "Anthony Fu <anthonyfu117@hotmail.com>",
+  "packageManager": "pnpm@10.28.1",
+  "author": "hackycy <hackycy@outlook.com>",
   "license": "MIT",
+  "homepage": "https://github.com/hackycy-collection/genv-cli#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hackycy-collection/genv-cli.git"
+  },
+  "bugs": "https://github.com/hackycy-collection/genv-cli/issues",
   "keywords": [],
   "sideEffects": false,
   "exports": {
@@ -28,22 +33,19 @@
     "prepublishOnly": "nr build",
     "release": "bumpp",
     "start": "tsx src/index.ts",
-    "test": "vitest",
+    "test": "pnpm -F ./playground build",
     "typecheck": "tsc",
     "prepare": "simple-git-hooks"
   },
-  "dependencies": {
-    "cac": "catalog:",
-    "dotenv": "catalog:",
-    "prompts": "catalog:",
-    "unconfig": "catalog:"
+  "peerDependencies": {
+    "vite": "^5.0.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:cli",
     "@antfu/ni": "catalog:cli",
     "@antfu/utils": "catalog:inlined",
+    "@clack/prompts": "catalog:cli",
     "@types/node": "catalog:types",
-    "@types/prompts": "catalog:",
     "bumpp": "catalog:cli",
     "eslint": "catalog:cli",
     "lint-staged": "catalog:cli",

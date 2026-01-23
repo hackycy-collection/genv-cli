@@ -7,16 +7,11 @@ packages:
 ignoreWorkspaceRootCheck: true
 shellEmulator: true
 
-catalog:
-  '@types/prompts': ^2.4.9
-  cac: ^6.7.14
-  dotenv: ^17.2.2
-  prompts: ^2.4.2
-  unconfig: ^7.3.3
 catalogs:
   cli:
     '@antfu/eslint-config': ^6.2.0
     '@antfu/ni': ^27.0.1
+    '@clack/prompts': ^0.11.0
     bumpp: ^10.3.1
     eslint: ^9.39.1
     lint-staged: ^16.2.6

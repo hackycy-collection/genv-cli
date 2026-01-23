@@ -12,6 +12,9 @@ catalogs:
     '@antfu/ni':
       specifier: ^27.0.1
       version: 27.0.1
+    '@clack/prompts':
+      specifier: ^0.11.0
+      version: 0.11.0
     bumpp:
       specifier: ^10.3.1
       version: 10.3.1
@@ -36,22 +39,6 @@ catalogs:
     vite:
       specifier: ^7.2.1
       version: 7.2.1
-  default:
-    '@types/prompts':
-      specifier: ^2.4.9
-      version: 2.4.9
-    cac:
-      specifier: ^6.7.14
-      version: 6.7.14
-    dotenv:
-      specifier: ^17.2.2
-      version: 17.2.2
-    prompts:
-      specifier: ^2.4.2
-      version: 2.4.2
-    unconfig:
-      specifier: ^7.3.3
-      version: 7.3.3
   inlined:
     '@antfu/utils':
       specifier: ^9.3.0
@@ -77,19 +64,6 @@ catalogs:
 importers:
 
   .:
-    dependencies:
-      cac:
-        specifier: 'catalog:'
-        version: 6.7.14
-      dotenv:
-        specifier: 'catalog:'
-        version: 17.2.2
-      prompts:
-        specifier: 'catalog:'
-        version: 2.4.2
-      unconfig:
-        specifier: 'catalog:'
-        version: 7.3.3
     devDependencies:
       '@antfu/eslint-config':
         specifier: catalog:cli
@@ -100,12 +74,12 @@ importers:
       '@antfu/utils':
         specifier: catalog:inlined
         version: 9.3.0
+      '@clack/prompts':
+        specifier: catalog:cli
+        version: 0.11.0
       '@types/node':
         specifier: catalog:types
         version: 24.10.0
-      '@types/prompts':
-        specifier: 'catalog:'
-        version: 2.4.9
       bumpp:
         specifier: catalog:cli
         version: 10.3.1
@@ -860,9 +834,6 @@ packages:
 
   '@types/node@24.10.0':
     resolution: {integrity: sha512-qzQZRBqkFsYyaSWXuEHc2WR9c0a0CXwiE5FWUvn7ZM+vdy1uZLfCunD38UzhuB7YN/J11ndbDBcTmOdxJo9Q7A==}
-
-  '@types/prompts@2.4.9':
-    resolution: {integrity: sha512-qTxFi6Buiu8+50/+3DGIWLHM6QuWsEKugJnnP6iv2Mc4ncxE4A/OJkjuVOA+5X0X1S/nq5VJRa8Lu+nwcvbrKA==}
 
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
@@ -1676,10 +1647,6 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  kleur@3.0.3:
-    resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
-    engines: {node: '>=6'}
-
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
@@ -1994,10 +1961,6 @@ packages:
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
-
-  prompts@2.4.2:
-    resolution: {integrity: sha512-NxNv/kLguCA7p3jE8oL2aEBsrJWgAakBpgmgK6lpPWV+WuOmY6r2/zbAVnP+T8bQlA0nzHXSJSJW0Hq7ylaD2Q==}
-    engines: {node: '>= 6'}
 
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
@@ -2980,11 +2943,6 @@ snapshots:
     dependencies:
       undici-types: 7.16.0
 
-  '@types/prompts@2.4.9':
-    dependencies:
-      '@types/node': 24.10.0
-      kleur: 3.0.3
-
   '@types/unist@3.0.3': {}
 
   '@typescript-eslint/eslint-plugin@8.46.2(@typescript-eslint/parser@8.46.2(eslint@9.39.1(jiti@2.6.0))(typescript@5.9.3))(eslint@9.39.1(jiti@2.6.0))(typescript@5.9.3)':
@@ -3872,8 +3830,6 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  kleur@3.0.3: {}
-
   levn@0.4.1:
     dependencies:
       prelude-ls: 1.2.1
@@ -4376,11 +4332,6 @@ snapshots:
       source-map-js: 1.2.1
 
   prelude-ls@1.2.1: {}
-
-  prompts@2.4.2:
-    dependencies:
-      kleur: 3.0.3
-      sisteransi: 1.0.5
 
   punycode@2.3.1: {}
 
