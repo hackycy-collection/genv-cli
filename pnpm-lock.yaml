@@ -18,6 +18,9 @@ catalogs:
     bumpp:
       specifier: ^10.3.1
       version: 10.3.1
+    cac:
+      specifier: ^6.7.14
+      version: 6.7.14
     eslint:
       specifier: ^9.39.1
       version: 9.39.1
@@ -64,6 +67,10 @@ catalogs:
 importers:
 
   .:
+    dependencies:
+      cac:
+        specifier: catalog:cli
+        version: 6.7.14
     devDependencies:
       '@antfu/eslint-config':
         specifier: catalog:cli

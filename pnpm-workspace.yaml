@@ -4,15 +4,13 @@ packages:
   - packages/*
   - examples/*
 
-ignoreWorkspaceRootCheck: true
-shellEmulator: true
-
 catalogs:
   cli:
     '@antfu/eslint-config': ^6.2.0
     '@antfu/ni': ^27.0.1
     '@clack/prompts': ^0.11.0
     bumpp: ^10.3.1
+    cac: ^6.7.14
     eslint: ^9.39.1
     lint-staged: ^16.2.6
     simple-git-hooks: ^2.13.1
@@ -29,6 +27,11 @@ catalogs:
     yaml: ^2.8.1
   types:
     '@types/node': ^24.10.0
+
+ignoreWorkspaceRootCheck: true
+
 onlyBuiltDependencies:
   - esbuild
   - simple-git-hooks
+
+shellEmulator: true
