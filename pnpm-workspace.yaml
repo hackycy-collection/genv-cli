@@ -17,6 +17,7 @@ catalogs:
     tsdown: ^0.16.0
     tsx: ^4.20.6
     typescript: ^5.9.3
+    unconfig: ^7.4.2
     vite: ^7.2.1
   inlined:
     '@antfu/utils': ^9.3.0

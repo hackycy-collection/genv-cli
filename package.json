@@ -21,9 +21,10 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
   "bin": {
-    "genv": "./dist/index.mjs"
+    "genv": "bin/genv.js"
   },
   "files": [
+    "bin",
     "dist"
   ],
   "scripts": {
@@ -32,21 +33,19 @@
     "lint": "eslint",
     "prepublishOnly": "nr build",
     "release": "bumpp",
-    "start": "tsx src/index.ts",
+    "test": "tsx src/cli.ts",
     "typecheck": "tsc",
     "prepare": "simple-git-hooks"
   },
-  "peerDependencies": {
-    "vite": "^5.0.0"
-  },
   "dependencies": {
-    "cac": "catalog:cli"
+    "@clack/prompts": "catalog:cli",
+    "cac": "catalog:cli",
+    "unconfig": "catalog:cli"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:cli",
     "@antfu/ni": "catalog:cli",
     "@antfu/utils": "catalog:inlined",
-    "@clack/prompts": "catalog:cli",
     "@types/node": "catalog:types",
     "bumpp": "catalog:cli",
     "eslint": "catalog:cli",
@@ -55,11 +54,7 @@
     "tinyexec": "catalog:testing",
     "tsdown": "catalog:cli",
     "tsx": "catalog:cli",
-    "typescript": "catalog:cli",
-    "vite": "catalog:cli",
-    "vitest": "catalog:testing",
-    "vitest-package-exports": "catalog:testing",
-    "yaml": "catalog:testing"
+    "typescript": "catalog:cli"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm i --frozen-lockfile --ignore-scripts --offline && npx lint-staged"
