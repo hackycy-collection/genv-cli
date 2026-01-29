@@ -22,7 +22,7 @@ pnpm add -D genv-cli
 示例配置：
 
 ```ts
-import { defineConfig } from './src/index'
+import { defineConfig } from 'genv-cli'
 
 export default defineConfig({
   // environments 的 key 直接作为输出文件路径（可相对路径 / 仅文件名）
