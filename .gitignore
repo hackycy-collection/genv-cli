@@ -13,3 +13,5 @@ cache
 .eslintcache
 .env
 .env.*
+genv.config.*
+genv.*

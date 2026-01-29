@@ -15,29 +15,47 @@ pnpm add -D genv-cli
 
 ## 使用
 
-``` ts
-import ExtraAppConfigPlugin from 'genv-cli'
-import { defineConfig } from 'vite'
+### 配置文件
+
+默认读取项目根目录的 genv.config.* 或 genv.*（支持 ts/js/json）。
+
+示例配置：
+
+```ts
+import { defineConfig } from './src/index'
 
 export default defineConfig({
-  plugins: [
-    ExtraAppConfigPlugin({
-      isBuild: true,
-      globalVarName: '__APP_ENV__',
-      envPrefixMatch: 'VITE_GLOB',
-      configFile: '_app.config.js',
-    }),
-  ],
+  // environments 的 key 直接作为输出文件路径（可相对路径 / 仅文件名）
+  environments: {
+    '.env': {
+      NODE_ENV: 'development',
+      API_BASE_URL: 'http://localhost:3000',
+    },
+    '.env.production': {
+      NODE_ENV: 'production',
+      API_BASE_URL: 'https://api.example.com',
+    },
+  },
+  // 可选
+  defaultEnvironment: '.env',
 })
 ```
 
-**辅助函数获取**
+### 命令行
 
-``` ts
-import { getEnvConfig } from 'genv-cli/helper'
+生成环境变量文件：
 
-console.log('Env Config:', getEnvConfig('__APP_ENV__'))
+```bash
+genv
 ```
+
+指定配置文件：
+
+```bash
+genv -c ./genv.config.ts
+```
+
+运行后会提示选择环境，并写入对应的 env 文件路径。
 
 ## License
 

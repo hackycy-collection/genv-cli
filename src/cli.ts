@@ -7,15 +7,14 @@ const cli = cac('genv')
 interface GlobalCLIOptions {
   '--'?: string[]
   'config'?: string
-  'base'?: string
 }
 
 cli
   .command('', 'Generate environment files')
   .option('-c, --config <file>', `[string] use specified config file`)
-  .action((options: GlobalCLIOptions) => {
-    console.log('gg', options)
-    console.log('Generating environment files...')
+  .action(async (options: GlobalCLIOptions) => {
+    const { generateEnvFile } = await import('./index')
+    await generateEnvFile(options.config)
   })
 
 cli.help()
