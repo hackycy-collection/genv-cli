@@ -8,9 +8,16 @@ export type EnvPrimitive = string | number | boolean | bigint | Date | null | un
 export type EnvValue = EnvPrimitive | Record<string, unknown> | unknown[]
 export type EnvConfig = Record<string, EnvValue>
 
-export interface UserConfig {
-  environments: Record<string, EnvConfig>
-  defaultEnvironment?: string
+export interface EnvironmentItem {
+  output: string
+  config: EnvConfig
+}
+
+export type EnvironmentsMap = Record<string, EnvironmentItem>
+
+export interface UserConfig<TEnvs extends EnvironmentsMap = EnvironmentsMap> {
+  environments: TEnvs
+  defaultEnvironment?: keyof TEnvs
 }
 
 export interface LoadedConfigResult {
@@ -18,7 +25,9 @@ export interface LoadedConfigResult {
   configFile?: string
 }
 
-export function defineConfig(config: UserConfig): UserConfig {
+export function defineConfig<const TEnvs extends EnvironmentsMap>(
+  config: UserConfig<TEnvs>,
+): UserConfig<TEnvs> {
   return config
 }
 
@@ -158,13 +167,13 @@ export async function generateEnvFile(configFilePath?: string): Promise<void> {
     envName = selected as string
   }
 
-  const envConfig = config.environments[envName]
-  if (!envConfig) {
+  const envItem = config.environments[envName]
+  if (!envItem) {
     cancel(`Environment not found: ${envName}`)
     return
   }
 
-  let outputFile = envName
+  let outputFile = envItem.output
   if (!outputFile) {
     const input = await text({
       message: 'Output env file path',
@@ -180,7 +189,7 @@ export async function generateEnvFile(configFilePath?: string): Promise<void> {
     outputFile = (input as string) || '.env'
   }
 
-  const envLines = mapConfigToEnvVariables(envConfig)
+  const envLines = mapConfigToEnvVariables(envItem.config)
   const content = envLines.join('\n').concat('\n')
 
   const baseDir = configFile ? path.dirname(configFile) : process.cwd()
