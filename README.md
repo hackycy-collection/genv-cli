@@ -68,12 +68,6 @@ genv -c ./genv.config.ts
 
 [MIT](./LICENSE) License © [hackycy](https://github.com/hackycy)
 
-## Credits
-
-This project also partially contains code derived or copied from the following projects:
-
-- [Vben](https://github.com/vbenjs/vue-vben-admin/)
-
 <!-- Badges -->
 
 [npm-version-src]: https://img.shields.io/npm/v/genv-cli?style=flat&colorA=080f12&colorB=1fa669
