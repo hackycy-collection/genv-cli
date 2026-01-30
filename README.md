@@ -5,7 +5,9 @@
 [![bundle][bundle-src]][bundle-href]
 [![License][license-src]][license-href]
 
-用于将配置文件抽离出来并注入到项目中的Vite Plugin
+配置化的方式生成dotenv文件小工具
+
+> 当你的项目一套代码但拥有多套生产环境配置时却想只保持一个.env.prodction配置时的解决方案
 
 ## 安装
 
