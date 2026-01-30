@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
-import { cancel, intro, isCancel, outro, select, text } from '@clack/prompts'
+import { cancel, confirm, intro, isCancel, outro, select, text } from '@clack/prompts'
 import { loadConfig } from 'unconfig'
 
 export type EnvPrimitive = string | number | boolean | bigint | Date | null | undefined
@@ -196,6 +196,15 @@ export async function generateEnvFile(configFilePath?: string): Promise<void> {
   const outputPath = path.isAbsolute(outputFile)
     ? outputFile
     : path.resolve(process.cwd(), outputFile)
+
+  const shouldWrite = await confirm({
+    message: `Generate env for "${envName}" and write to "${outputPath}"?`,
+  })
+
+  if (isCancel(shouldWrite) || !shouldWrite) {
+    cancel('Operation cancelled.')
+    return
+  }
 
   await fs.mkdir(path.dirname(outputPath), { recursive: true })
   await fs.writeFile(outputPath, content, 'utf8')
