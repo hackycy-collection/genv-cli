@@ -15,9 +15,8 @@ export interface EnvironmentItem {
 
 export type EnvironmentsMap = Record<string, EnvironmentItem>
 
-export interface UserConfig<TEnvs extends EnvironmentsMap = EnvironmentsMap> {
-  environments: TEnvs
-  defaultEnvironment?: keyof TEnvs
+export interface UserConfig {
+  environments: EnvironmentsMap
 }
 
 export interface LoadedConfigResult {
@@ -25,9 +24,7 @@ export interface LoadedConfigResult {
   configFile?: string
 }
 
-export function defineConfig<const TEnvs extends EnvironmentsMap>(
-  config: UserConfig<TEnvs>,
-): UserConfig<TEnvs> {
+export function defineConfig(config: UserConfig): UserConfig {
   return config
 }
 
@@ -156,7 +153,6 @@ export async function generateEnvFile(configFilePath?: string): Promise<void> {
         label: name,
         value: name,
       })),
-      initialValue: config.defaultEnvironment,
     })
 
     if (isCancel(selected)) {
@@ -177,8 +173,7 @@ export async function generateEnvFile(configFilePath?: string): Promise<void> {
   if (!outputFile) {
     const input = await text({
       message: 'Output env file path',
-      placeholder: '.env',
-      defaultValue: '.env',
+      placeholder: 'e.g. .env.production',
     })
 
     if (isCancel(input)) {
@@ -186,7 +181,17 @@ export async function generateEnvFile(configFilePath?: string): Promise<void> {
       return
     }
 
-    outputFile = (input as string) || '.env'
+    outputFile = (input as string)
+  }
+
+  if (outputFile.trim() === '') {
+    cancel('Output file path cannot be empty.')
+    return
+  }
+
+  if (Object.keys(envItem.config || {}).length === 0) {
+    cancel(`No config found for environment: ${envName}`)
+    return
   }
 
   const envLines = mapConfigToEnvVariables(envItem.config)

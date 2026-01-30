@@ -13,11 +13,9 @@
 pnpm add -D genv-cli
 ```
 
-## 使用
+## 配置
 
-### 配置文件
-
-默认读取项目根目录的 genv.config.* 或 genv.*（支持 ts/js/json）。
+默认读取项目根目录的 `genv.config.*`（支持 ts/js/json）。
 
 示例配置：
 
@@ -43,17 +41,15 @@ export default defineConfig({
       },
     },
   },
-  // 可选
-  defaultEnvironment: 'dev',
 })
 ```
 
-### 命令行
+## 使用
 
 生成环境变量文件：
 
 ```bash
-genv
+npx genv
 ```
 
 指定配置文件：
@@ -62,7 +58,7 @@ genv
 genv -c ./genv.config.ts
 ```
 
-运行后会提示选择环境，并写入对应的 env 文件路径。
+运行后会提示选择环境，并写入对应的`env`文件路径。
 
 ## License
 
