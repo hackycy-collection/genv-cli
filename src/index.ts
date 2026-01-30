@@ -140,7 +140,7 @@ export function mapConfigToEnvVariables(cfg: Record<string, any>): string[] {
 export async function generateEnvFile(configFilePath?: string): Promise<void> {
   intro('genv')
 
-  const { config, configFile } = await loadConfigFromFile(configFilePath)
+  const { config } = await loadConfigFromFile(configFilePath)
   const envNames = Object.keys(config.environments || {})
 
   if (envNames.length === 0) {
@@ -192,10 +192,10 @@ export async function generateEnvFile(configFilePath?: string): Promise<void> {
   const envLines = mapConfigToEnvVariables(envItem.config)
   const content = envLines.join('\n').concat('\n')
 
-  const baseDir = configFile ? path.dirname(configFile) : process.cwd()
+  // const baseDir = configFile ? path.dirname(configFile) : process.cwd()
   const outputPath = path.isAbsolute(outputFile)
     ? outputFile
-    : path.resolve(baseDir, outputFile)
+    : path.resolve(process.cwd(), outputFile)
 
   await fs.mkdir(path.dirname(outputPath), { recursive: true })
   await fs.writeFile(outputPath, content, 'utf8')
