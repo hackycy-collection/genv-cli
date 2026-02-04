@@ -25,24 +25,24 @@ pnpm add -D genv-cli
 import { defineConfig } from 'genv-cli'
 
 export default defineConfig({
-  // environments 的 key 作为环境名，output 为输出文件路径（可相对路径 / 仅文件名）
+  // environments 的 tag 作为环境名，output 为输出文件路径（可相对路径 / 仅文件名）
   // 不同环境可以输出到同一个 env 文件
-  environments: {
-    dev: {
-      output: '.env',
+  environments: [
+    {
+      tag: '生产环境1',
+      output: '.env.production',
       config: {
-        NODE_ENV: 'development',
         API_BASE_URL: 'http://localhost:3000',
       },
     },
-    prod: {
-      output: '.env',
+    {
+      tag: '生产环境2',
+      output: '.env.production',
       config: {
-        NODE_ENV: 'production',
         API_BASE_URL: 'https://api.example.com',
       },
     },
-  },
+  ],
 })
 ```
 

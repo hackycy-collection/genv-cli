@@ -11,12 +11,13 @@ export type EnvConfig = Record<string, EnvValue>
 export interface EnvironmentItem {
   output: string
   config: EnvConfig
+  tag: string
 }
 
 export type EnvironmentsMap = Record<string, EnvironmentItem>
 
 export interface UserConfig {
-  environments: EnvironmentsMap
+  environments: EnvironmentItem[]
 }
 
 export interface LoadedConfigResult {
@@ -43,12 +44,12 @@ export async function loadConfigFromFile(configFile?: string): Promise<LoadedCon
     cwd: process.cwd(),
     sources,
     defaults: {
-      environments: {},
+      environments: [],
     },
   })
 
   return {
-    config: config || { environments: {} },
+    config: config || { environments: [] },
     configFile: resolvedPath,
   }
 }
@@ -138,7 +139,16 @@ export async function generateEnvFile(configFilePath?: string): Promise<void> {
   intro('genv')
 
   const { config } = await loadConfigFromFile(configFilePath)
-  const envNames = Object.keys(config.environments || {})
+  const envNames = (config.environments || []).map(env => env.tag)
+
+  // duplicate tags check
+  const tagSet = new Set<string>(Array.from(envNames))
+  if (tagSet.size < envNames.length) {
+    // find duplicate tags
+    const duplicates = envNames.filter((item, index) => envNames.indexOf(item) !== index)
+    cancel(`Duplicate environment tags found: ${duplicates.join(', ')}`)
+    return
+  }
 
   if (envNames.length === 0) {
     cancel('No environments found in config.')
@@ -163,7 +173,7 @@ export async function generateEnvFile(configFilePath?: string): Promise<void> {
     envName = selected as string
   }
 
-  const envItem = config.environments[envName]
+  const envItem = config.environments.find(env => env.tag === envName)
   if (!envItem) {
     cancel(`Environment not found: ${envName}`)
     return
