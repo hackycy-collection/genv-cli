@@ -139,27 +139,36 @@ export async function generateEnvFile(configFilePath?: string): Promise<void> {
   intro('genv')
 
   const { config } = await loadConfigFromFile(configFilePath)
-  const envNames = (config.environments || []).map(env => env.tag)
+  const envTags = (config.environments || []).map(env => env.tag)
+
+  // 是否需要二次确认，避免CI环境下卡住
+  let needConfirm = true
 
   // duplicate tags check
-  const tagSet = new Set<string>(Array.from(envNames))
-  if (tagSet.size < envNames.length) {
+  const tagSet = new Set<string>(Array.from(envTags))
+  if (tagSet.size < envTags.length) {
     // find duplicate tags
-    const duplicates = envNames.filter((item, index) => envNames.indexOf(item) !== index)
+    const duplicates = envTags.filter((item, index) => envTags.indexOf(item) !== index)
     cancel(`Duplicate environment tags found: ${duplicates.join(', ')}`)
     return
   }
 
-  if (envNames.length === 0) {
+  if (envTags.length === 0) {
     cancel('No environments found in config.')
     return
   }
 
-  let envName = envNames[0]
-  if (envNames.length > 1) {
+  let envTag: string | undefined
+
+  // for ci
+  if (process.env.GENV_CI_TAG) {
+    envTag = process.env.GENV_CI_TAG
+    needConfirm = false
+  }
+  else if (envTags.length > 1) {
     const selected = await select({
       message: 'Select environment',
-      options: envNames.map(name => ({
+      options: envTags.map(name => ({
         label: name,
         value: name,
       })),
@@ -170,12 +179,20 @@ export async function generateEnvFile(configFilePath?: string): Promise<void> {
       return
     }
 
-    envName = selected as string
+    envTag = selected as string
+  }
+  else if (envTags.length === 1) {
+    envTag = envTags[0]
   }
 
-  const envItem = config.environments.find(env => env.tag === envName)
+  if (!envTag) {
+    cancel('No environment selected.')
+    return
+  }
+
+  const envItem = config.environments.find(env => env.tag === envTag)
   if (!envItem) {
-    cancel(`Environment not found: ${envName}`)
+    cancel(`Environment not found: ${envTag}`)
     return
   }
 
@@ -200,7 +217,7 @@ export async function generateEnvFile(configFilePath?: string): Promise<void> {
   }
 
   if (Object.keys(envItem.config || {}).length === 0) {
-    cancel(`No config found for environment: ${envName}`)
+    cancel(`No config found for environment: ${envTag}`)
     return
   }
 
@@ -212,13 +229,16 @@ export async function generateEnvFile(configFilePath?: string): Promise<void> {
     ? outputFile
     : path.resolve(process.cwd(), outputFile)
 
-  const shouldWrite = await confirm({
-    message: `Generate env for "${envName}" and write to "${outputPath}"?`,
-  })
+  // 二次确认
+  if (needConfirm) {
+    const shouldWrite = await confirm({
+      message: `Generate env for "${envTag}" and write to "${outputPath}"?`,
+    })
 
-  if (isCancel(shouldWrite) || !shouldWrite) {
-    cancel('Operation cancelled.')
-    return
+    if (isCancel(shouldWrite) || !shouldWrite) {
+      cancel('Operation cancelled.')
+      return
+    }
   }
 
   await fs.mkdir(path.dirname(outputPath), { recursive: true })
