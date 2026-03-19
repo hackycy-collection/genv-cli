@@ -2,7 +2,7 @@ import type { Dirent } from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
-import { cancel, confirm, intro, isCancel, outro, select, text } from '@clack/prompts'
+import { cancel, confirm, intro, isCancel, log, outro, select, text } from '@clack/prompts'
 import { loadConfig } from 'unconfig'
 
 export type EnvPrimitive = string | number | boolean | bigint | Date | null | undefined
@@ -94,14 +94,33 @@ export async function resolveConfigFile(explicitConfig?: string): Promise<string
   if (found.length === 0)
     return undefined
 
-  if (found.length === 1)
+  if (found.length === 1) {
+    const dir = path.dirname(found[0])
+    const rel = path.relative(cwd, dir) || '.'
+    let pkgName: string | undefined
+    try {
+      const raw = await fs.readFile(path.join(dir, 'package.json'), 'utf8')
+      pkgName = JSON.parse(raw).name
+    }
+    catch {}
+    const label = pkgName ?? path.basename(dir)
+    log.info(`Workspace: ${label} (${rel})`)
     return found[0]
+  }
 
   // multiple workspaces — let user pick
-  const options = found.map((f) => {
-    const rel = path.relative(cwd, f)
-    return { label: rel, value: f }
-  })
+  const options = await Promise.all(found.map(async (f) => {
+    const dir = path.dirname(f)
+    const rel = path.relative(cwd, dir) || '.'
+    let pkgName: string | undefined
+    try {
+      const raw = await fs.readFile(path.join(dir, 'package.json'), 'utf8')
+      pkgName = JSON.parse(raw).name
+    }
+    catch {}
+    const label = pkgName ?? path.basename(dir)
+    return { label, hint: rel, value: f }
+  }))
 
   const selected = await select({
     message: 'Select workspace',
