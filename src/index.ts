@@ -1,3 +1,4 @@
+import type { Dirent } from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
@@ -29,29 +30,88 @@ export function defineConfig(config: UserConfig): UserConfig {
   return config
 }
 
-export async function loadConfigFromFile(configFile?: string): Promise<LoadedConfigResult> {
-  const resolvedPath = configFile ? path.resolve(configFile) : undefined
-  const extensions = ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json']
-  const sources = resolvedPath
-    ? [
-        { files: resolvedPath },
-      ]
-    : [
-        { files: 'genv.config', extensions },
-      ]
+const CONFIG_EXTENSIONS = ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json']
+const CONFIG_NAMES = CONFIG_EXTENSIONS.map(ext => `genv.config.${ext}`)
+const IGNORE_DIRS = new Set(['node_modules', '.git', 'dist', '.cache'])
 
-  const { config } = await loadConfig<UserConfig>({
-    cwd: process.cwd(),
-    sources,
-    defaults: {
-      environments: [],
-    },
+async function hasPackageJson(dir: string): Promise<boolean> {
+  try {
+    await fs.access(path.join(dir, 'package.json'))
+    return true
+  }
+  catch {
+    return false
+  }
+}
+
+export async function findAllConfigFiles(cwd: string): Promise<string[]> {
+  const results: string[] = []
+
+  async function walk(dir: string): Promise<void> {
+    let entries: Dirent[]
+    try {
+      entries = await fs.readdir(dir, { withFileTypes: true })
+    }
+    catch {
+      return
+    }
+
+    const names = entries.map(e => e.name)
+    const configName = names.find(n => CONFIG_NAMES.includes(n))
+    if (configName && await hasPackageJson(dir))
+      results.push(path.join(dir, configName))
+
+    for (const entry of entries) {
+      if (entry.isDirectory() && !IGNORE_DIRS.has(entry.name))
+        await walk(path.join(dir, entry.name))
+    }
+  }
+
+  await walk(cwd)
+  return results
+}
+
+export async function loadConfigFromFile(configFile: string): Promise<LoadedConfigResult> {
+  const { config, sources } = await loadConfig<UserConfig>({
+    cwd: path.dirname(configFile),
+    sources: [{ files: path.basename(configFile) }],
+    defaults: { environments: [] },
   })
 
   return {
     config: config || { environments: [] },
-    configFile: resolvedPath,
+    configFile: sources[0] ?? configFile,
   }
+}
+
+export async function resolveConfigFile(explicitConfig?: string): Promise<string | undefined> {
+  if (explicitConfig)
+    return path.resolve(explicitConfig)
+
+  const cwd = process.cwd()
+  const found = await findAllConfigFiles(cwd)
+
+  if (found.length === 0)
+    return undefined
+
+  if (found.length === 1)
+    return found[0]
+
+  // multiple workspaces — let user pick
+  const options = found.map((f) => {
+    const rel = path.relative(cwd, f)
+    return { label: rel, value: f }
+  })
+
+  const selected = await select({
+    message: 'Select workspace',
+    options,
+  })
+
+  if (isCancel(selected))
+    return undefined
+
+  return selected as string
 }
 
 /**
@@ -138,7 +198,14 @@ export function mapConfigToEnvVariables(cfg: Record<string, any>): string[] {
 export async function generateEnvFile(configFilePath?: string): Promise<void> {
   intro('genv')
 
-  const { config } = await loadConfigFromFile(configFilePath)
+  const resolvedConfigFile = await resolveConfigFile(configFilePath)
+  if (!resolvedConfigFile) {
+    cancel('No genv config file found.')
+    return
+  }
+
+  const { config, configFile } = await loadConfigFromFile(resolvedConfigFile)
+  const configDir = path.dirname(configFile!)
   const envTags = (config.environments || []).map(env => env.tag)
 
   // 是否需要二次确认，避免CI环境下卡住
@@ -227,7 +294,7 @@ export async function generateEnvFile(configFilePath?: string): Promise<void> {
   // const baseDir = configFile ? path.dirname(configFile) : process.cwd()
   const outputPath = path.isAbsolute(outputFile)
     ? outputFile
-    : path.resolve(process.cwd(), outputFile)
+    : path.resolve(configDir, outputFile)
 
   // 二次确认
   if (needConfirm) {
