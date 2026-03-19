@@ -34,6 +34,16 @@ const CONFIG_EXTENSIONS = ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json']
 const CONFIG_NAMES = CONFIG_EXTENSIONS.map(ext => `genv.config.${ext}`)
 const IGNORE_DIRS = new Set(['node_modules', '.git', 'dist', '.cache'])
 
+async function hasPackageJson(dir: string): Promise<boolean> {
+  try {
+    await fs.access(path.join(dir, 'package.json'))
+    return true
+  }
+  catch {
+    return false
+  }
+}
+
 export async function findAllConfigFiles(cwd: string): Promise<string[]> {
   const results: string[] = []
 
@@ -45,14 +55,15 @@ export async function findAllConfigFiles(cwd: string): Promise<string[]> {
     catch {
       return
     }
+
+    const names = entries.map(e => e.name)
+    const configName = names.find(n => CONFIG_NAMES.includes(n))
+    if (configName && await hasPackageJson(dir))
+      results.push(path.join(dir, configName))
+
     for (const entry of entries) {
-      if (entry.isDirectory()) {
-        if (!IGNORE_DIRS.has(entry.name))
-          await walk(path.join(dir, entry.name))
-      }
-      else if (CONFIG_NAMES.includes(entry.name)) {
-        results.push(path.join(dir, entry.name))
-      }
+      if (entry.isDirectory() && !IGNORE_DIRS.has(entry.name))
+        await walk(path.join(dir, entry.name))
     }
   }
 
